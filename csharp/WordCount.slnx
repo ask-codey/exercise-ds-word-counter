@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WordCount/WordCount.csproj" />
+  <Project Path="WordCount.Tests/WordCount.Tests.csproj" />
+</Solution>
