@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using WordCount;
 
 namespace WordCount.Tests;
@@ -93,5 +94,25 @@ public class WordCounterTests
             WordCounter.MostCommon(counts, 10),
             "Not yet: the story's ten most common words are the, morning, and, maya, on, priya, was, gym, swam, closed.");
         Assert.AreEqual(28, WordCounter.UsedOnce(counts).Count, "Not yet: 28 of the story's words are used only once.");
+    }
+
+    [TestMethod]
+    public void AYearOfCommentsTakesUnderTwoSeconds()
+    {
+        List<string> comments = new List<string>();
+        for (int i = 0; i < 300000; i++)
+        {
+            comments.Add("word" + (i * 7 % 30000));
+        }
+        Stopwatch watch = Stopwatch.StartNew();
+        Dictionary<string, int> counts = WordCounter.CountWords(comments);
+        List<string> top = WordCounter.MostCommon(counts, 10);
+        List<string> once = WordCounter.UsedOnce(counts);
+        watch.Stop();
+        Assert.AreEqual(30000, counts.Count, "Not yet: a year of comments has 300,000 words and 30,000 different ones.");
+        CollectionAssert.AreEqual(new List<string> { "word0", "word1", "word10" }, top.GetRange(0, Math.Min(3, top.Count)),
+            "Not yet: every word appears 10 times, so the most common come from A to Z: word0, word1, word10.");
+        Assert.AreEqual(0, once.Count, "Not yet: every word appears 10 times, so none is used only once.");
+        Assert.IsTrue(watch.Elapsed.TotalSeconds < 2, "Not yet: a year of comments took " + watch.Elapsed.TotalSeconds.ToString("0.0") + " seconds. When each word's count is found in one step, it takes well under one.");
     }
 }

@@ -63,3 +63,20 @@ test("the whole story", () => {
     "Not yet: the story's ten most common words are the, morning, and, maya, on, priya, was, gym, swam, closed.");
   assert.equal(usedOnce(counts).length, 28, "Not yet: 28 of the story's words are used only once.");
 });
+
+test("a year of comments takes under 2 seconds", () => {
+  const comments: string[] = [];
+  for (let i = 0; i < 300000; i++) {
+    comments.push(`word${(i * 7) % 30000}`);
+  }
+  const started = performance.now();
+  const counts = countWords(comments);
+  const top = mostCommon(counts, 10);
+  const once = usedOnce(counts);
+  const seconds = (performance.now() - started) / 1000;
+  assert.equal(counts.size, 30000, "Not yet: a year of comments has 300,000 words and 30,000 different ones.");
+  assert.deepEqual(top.slice(0, 3), ["word0", "word1", "word10"],
+    "Not yet: every word appears 10 times, so the most common come from A to Z: word0, word1, word10.");
+  assert.deepEqual(once, [], "Not yet: every word appears 10 times, so none is used only once.");
+  assert.ok(seconds < 2, `Not yet: a year of comments took ${seconds.toFixed(1)} seconds. When each word's count is found in one step, it takes well under one.`);
+});

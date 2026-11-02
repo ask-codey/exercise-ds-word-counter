@@ -1,5 +1,7 @@
 # The tests for your word counter. You don't need to change this file.
 # Each message says what was expected, so a failing test tells you what to look at.
+import time
+
 from word_counter import count_words, most_common, split_words, used_once
 
 STORY = ("The little gym on Maple Street opened at six. Every morning the same three friends came in before work. "
@@ -58,3 +60,18 @@ def test_the_whole_story():
     assert most_common(counts, 10) == ["the", "morning", "and", "maya", "on", "priya", "was", "gym", "swam", "closed"], \
         "Not yet: the story's ten most common words are the, morning, and, maya, on, priya, was, gym, swam, closed."
     assert len(used_once(counts)) == 28, "Not yet: 28 of the story's words are used only once."
+
+
+def test_a_year_of_comments_takes_under_2_seconds():
+    comments = [f"word{(i * 7) % 30000}" for i in range(300000)]
+    started = time.perf_counter()
+    counts = count_words(comments)
+    top = most_common(counts, 10)
+    once = used_once(counts)
+    seconds = time.perf_counter() - started
+    assert len(counts) == 30000, "Not yet: a year of comments has 300,000 words and 30,000 different ones."
+    assert top[:3] == ["word0", "word1", "word10"], (
+        "Not yet: every word appears 10 times, so the most common come from A to Z: word0, word1, word10.")
+    assert once == [], "Not yet: every word appears 10 times, so none is used only once."
+    assert seconds < 2, (
+        f"Not yet: a year of comments took {seconds:.1f} seconds. When each word's count is found in one step, it takes well under one.")

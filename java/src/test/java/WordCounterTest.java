@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,5 +79,23 @@ class WordCounterTest {
         assertEquals(List.of("the", "morning", "and", "maya", "on", "priya", "was", "gym", "swam", "closed"), WordCounter.mostCommon(counts, 10),
             "Not yet: the story's ten most common words are the, morning, and, maya, on, priya, was, gym, swam, closed.");
         assertEquals(28, WordCounter.usedOnce(counts).size(), "Not yet: 28 of the story's words are used only once.");
+    }
+
+    @Test
+    void aYearOfCommentsTakesUnderTwoSeconds() {
+        List<String> comments = new ArrayList<>();
+        for (int i = 0; i < 300000; i++) {
+            comments.add("word" + (i * 7 % 30000));
+        }
+        long started = System.nanoTime();
+        Map<String, Integer> counts = WordCounter.countWords(comments);
+        List<String> top = WordCounter.mostCommon(counts, 10);
+        List<String> once = WordCounter.usedOnce(counts);
+        double seconds = (System.nanoTime() - started) / 1e9;
+        assertEquals(30000, counts.size(), "Not yet: a year of comments has 300,000 words and 30,000 different ones.");
+        assertEquals(List.of("word0", "word1", "word10"), top.subList(0, Math.min(3, top.size())),
+            "Not yet: every word appears 10 times, so the most common come from A to Z: word0, word1, word10.");
+        assertEquals(List.of(), once, "Not yet: every word appears 10 times, so none is used only once.");
+        assertTrue(seconds < 2, "Not yet: a year of comments took %.1f seconds. When each word's count is found in one step, it takes well under one.".formatted(seconds));
     }
 }
